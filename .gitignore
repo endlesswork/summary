@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# VitePress build output
+docs/.vitepress/dist/
+
+# VitePress cache
+docs/.vitepress/cache/
+
+# Vite cache
+.vite/
+
+# Logs
+*.log
+
+# macOS files
+.DS_Store
+
+# Editor settings
+.vscode/
+.idea/
