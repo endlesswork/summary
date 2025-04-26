@@ -17,9 +17,9 @@ export default defineConfig({
         items: [
           { text: '持久化', link: '/redis/redis-persistence' },
           { text: '集群', link: '/redis/redis-cluster' },
+          { text: 'ZSET', link: '/redis/redis-zset' },
+          { text: '布隆过滤器', link: '/redis/redis-bloom' },
           { text: '日常使用', link: '/redis/redis-use' },
-          { text: 'ZSET', link: '/redis/redis-use' },
-          { text: '布隆过滤器', link: '/redis/redis-bloom' }
         ]
       }
     ]

@@ -16,7 +16,7 @@ redis-trib 对集群的单个槽slot进行重新分片的步骤如下：
    这一指派信息会通过消息发送至整个集群，最终集群中的所有节点都会知道槽slot已经指派给了目标节点
 ```
 
-![redis-trib](/image/redis-trib.png)
+![redis-trib](/image/redis/redis-trib.png)
 
 如果重新分片涉及多个哈希槽，那么redis-trib将对每个给定的槽分别执行上面给出的步骤。
 
