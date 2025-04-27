@@ -1,6 +1,5 @@
-### zset
 
+### Redis分key
 
-
-### Redis 热点key（比如优惠卷）
+在redis集群中，为了应对热点key，经常采取分key的策略
 
