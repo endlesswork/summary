@@ -3,6 +3,9 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "总结",
   description: "A VitePress Site",
+  markdown: {
+    math: true
+  },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },

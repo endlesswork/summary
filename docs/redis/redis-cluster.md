@@ -1,4 +1,7 @@
 ## redis集群
+
+### redis通信
+
 ### redis集群重新分片
 
 Redis 集群的重新分片操作是由 Redis 的集群管理软件 redis-trib 负责执行的， Redis 提供了进行重新分片所需的所有命令，

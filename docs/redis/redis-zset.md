@@ -4,13 +4,13 @@ zset（有序集合）是一种非常常用的数据结构，它结合了哈希�
 
 zset特点
 
-1.唯一性：zset中的每个元素是唯一的
+1. 唯一性：zset中的每个元素是唯一的
 
-2.有序性：zset中的元素根据分数进行排序，分数可以是任意浮动的数字
+2. 有序性：zset中的元素根据分数进行排序，分数可以是任意浮动的数字
 
-3.高效性：Redis使用跳表（skip list）来实现zset，因此zset支持高效的插入、删除和查询操作，特别是对于范围查询（如按分数区间查询）非常高效
+3. 高效性：Redis使用跳表（skip list）来实现zset，因此zset支持高效的插入、删除和查询操作，特别是对于范围查询（如按分数区间查询）非常高效
 
-#### redis日常用到指令如下
+### redis日常用到指令如下
 
 1. ZADD key score member 
 添加元素到zset里面
@@ -66,7 +66,7 @@ ZREVRANGEBYSCORE key max min [WITHSCORES] [LIMIT offset count]：返回指定分
 (integer) 1
 ```
 
-#### zset 数据结构
+### zset 数据结构
 
 前面说了 zset 结合了哈希表和跳表的特性, 在它的内部保存了 一份由元素与分数构成的哈希结构，一份根据分数排序的跳表
 上面 ZSCORE key member：获取指定元素的分数 它就利用了哈希的结构，
@@ -77,7 +77,7 @@ ZREVRANGEBYSCORE key max min [WITHSCORES] [LIMIT offset count]：返回指定分
 
 
 
-#### SpringBoot使用如下
+### SpringBoot使用如下
 
 比如我们有一个根据用户进入时间排序的
 ```
