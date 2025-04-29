@@ -1,6 +1,7 @@
 ## redis集群
 
-### redis通信
+### Redis Gossip 协议
+
 
 ### redis集群重新分片
 
