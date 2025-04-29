@@ -3,10 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "总结",
   description: "A VitePress Site",
+  base: "summary",
   markdown: {
     math: true
   },
-  base: '/summary/', 
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
