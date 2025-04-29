@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: "总结",
-  description: "A VitePress Site",
+  description: "Java",
   base: "summary",
   markdown: {
     math: true
