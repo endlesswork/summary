@@ -6,6 +6,7 @@ export default defineConfig({
   markdown: {
     math: true
   },
+  base: '/summary/', 
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
