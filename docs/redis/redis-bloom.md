@@ -70,7 +70,7 @@ Redis 本身不内置布隆过滤器，但可以通过 Redis 模块 RedisBloom �
 
 springboot的 RedisTemplate 并不支持 bloom 需要引入 redisson
 
-```
+```java
 @RestController
 @RequestMapping("/bloom")
 public class BloomDemo {
@@ -94,7 +94,7 @@ public class BloomDemo {
 
 ```
 
-```
+```java
 @Service
 public class BloomService {
 
