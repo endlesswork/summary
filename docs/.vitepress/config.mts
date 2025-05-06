@@ -63,6 +63,15 @@ export default defineConfig({
         items: [
           { text: '分布式ID', link: '/distributed/distributed-id' },
         ]
+      },
+      {
+        text: '计算机原理',
+        collapsed: true,
+        items: [
+          { text: '内核态和用户态', link: '/computer/kernel-mode' },
+		  { text: 'DMA', link: '/computer/dma' },
+		  { text: '零拷贝', link: '/computer/zero-copy' },
+        ]
       }
     ]
   }
