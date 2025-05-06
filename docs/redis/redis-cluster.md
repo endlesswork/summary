@@ -129,3 +129,16 @@ Hash Tag 就是 key 中用 {} 包起来的一部分内容。
 Redis 会对 {1001} 做哈希计算，而不是整个 key。这样这两个 key 会被放到同一个槽上。
 
 同理 我们运用到Hash Tag 不合理的话就会导致某个hash槽负载过大
+
+
+Hash Tag 计算 示例
+```java
+import io.lettuce.core.cluster.SlotHash;
+
+public class SlotHashExample {
+    public static void main(String[] args) {
+        System.out.println(SlotHash.getSlot("user:{1001}:name"));
+        System.out.println(SlotHash.getSlot("user:{1001}:age"));
+    }
+}
+```
