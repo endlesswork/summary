@@ -69,8 +69,9 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: '内核态和用户态', link: '/computer/kernel-mode' },
-		  { text: 'DMA', link: '/computer/dma' },
-		  { text: '零拷贝', link: '/computer/zero-copy' },
+          { text: 'DMA', link: '/computer/dma' },
+          { text: '传统I/O', link: '/computer/computer-io' },
+          { text: '零拷贝', link: '/computer/zero-copy' },
         ]
       }
     ]
