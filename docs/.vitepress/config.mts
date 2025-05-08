@@ -18,6 +18,7 @@ export default defineConfig({
 		  collapsed: true,
 		  items: [
 			  { text: '线程方法', link: '/thread/thread' },
+			  { text: 'ReentrantLock实现原理', link: '/thread/reentrantlock' },
 		  ]
 		},
 		{
