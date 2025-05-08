@@ -72,6 +72,7 @@ export default defineConfig({
           { text: 'DMA', link: '/computer/dma' },
           { text: '传统I/O', link: '/computer/computer-io' },
           { text: '零拷贝', link: '/computer/zero-copy' },
+		  { text: 'I/O模型', link: '/computer/io-model' },
         ]
       }
     ]
