@@ -14,6 +14,12 @@ export default defineConfig({
     ],
     sidebar: [
 		{
+		  text: '并发',
+		  collapsed: true,
+		  items: [
+		  ]
+		},
+		{
 		  text: 'Mysql',
 		  collapsed: true,
 		  items: [
@@ -47,6 +53,24 @@ export default defineConfig({
           { text: 'Watch', link: '/zookeeper/zookeeper-watch' },
         ]
       },
+	  {
+	    text: 'Dubbo',
+	    collapsed: true,
+	    items: [
+	    ]
+	  },
+	  {
+	    text: 'Kafka',
+	    collapsed: true,
+	    items: [
+	    ]
+	  },
+	  {
+	    text: 'SpringBoot',
+	    collapsed: true,
+	    items: [
+	    ]
+	  },
       {
         text: '网络',
         collapsed: true,
