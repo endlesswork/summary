@@ -1,12 +1,12 @@
 ReentrantLock是公平锁、可重入锁
 ReentrantLock是通过AQS实现的，内部类Sync继承AbstractQueuedSynchronizer，几个内部类的关系图如下
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-04b2f99dcf7b08e5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock1](/image/thread/reentrantlock/reentrantlock1.webp)
 
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-0bcad707bd67a4a6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock2](/image/thread/reentrantlock/reentrantlock2.webp)
 FairSync和NonfairSync继承Sync，
 初始化ReentrantLock时，如果不指定公平锁，ReentrantLock默认为非公平锁
 # 一、参数
-```
+```java
     //独占模式的线程拥有者，位于AbstractOwnableSynchronizer类中
     private transient Thread exclusiveOwnerThread;
      /**FIFO队列中的头Node 位于AbstractQueuedSynchronizer类中**/
@@ -18,7 +18,7 @@ FairSync和NonfairSync继承Sync，
 ```
 # 二、内部类
 ## 1、AbstractQueuedSynchronizer内部类Node 
-```
+```java
     static final class Node {
        //表示Node处于共享模式
         static final Node SHARED = new Node();
@@ -71,7 +71,7 @@ FairSync和NonfairSync继承Sync，
 ```
 ## 2、AbstractQueuedSynchronizer内部类ConditionObject 
 在这里我们看下为什么我们在操作await和signal时候需要获取到锁（这是锁肯定要实现的功能，在不考虑共享锁情况下，多线程并发处理临界条件，本质上还是让一个线程去每次读写临界条件，其他线程就得挂起，试想如果await不需要获取锁就可以操作其他线程持有的锁，这样代码就会变得极难控制）
-```
+```java
 public class ConditionObject implements Condition, java.io.Serializable {
         private static final long serialVersionUID = 1173984872572414699L;
         /**条件队列的第一个节点 */
@@ -88,7 +88,7 @@ public class ConditionObject implements Condition, java.io.Serializable {
 # 三、方法实现
 ## 1.lock()非公平锁实现
 lock()实现，如果获取到锁则state+1，获取不到则放入到双向链表，
-```
+```java
 final void lock() {
     /**如果state初始值为0（代表没有加锁），则更新为1，并且将当前线程对象
      **保存exclusiveOwnerThread中**/
@@ -182,10 +182,10 @@ final boolean nonfairTryAcquire(int acquires) {
 ```
 假设我们有线程t0、t1、t2、t3、t4都去获取锁，只有t0获取到锁
 多线程情况下addWaiter最终形成链表队列如下 node1即为返回的node节点
-![](https://upload-images.jianshu.io/upload_images/15302255-8f896ef5b3c8fda9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock3](/image/thread/reentrantlock/reentrantlock3.webp)
 承接acquireQueued()
 这个方法主要尝试去获取锁，如果获取不到则将线程阻塞。等待被唤醒
-```
+```java
     final boolean acquireQueued(final Node node, int arg) {
         boolean failed = true;
         try {
@@ -247,13 +247,13 @@ final boolean nonfairTryAcquire(int acquires) {
   
 ```
 在这一步结束后，假设t1和t2、t3、t4都没获取到锁，锁等待队列可能如下，和之前比waitStatus发生变化
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-c6b9caf14684b5e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock4](/image/thread/reentrantlock/reentrantlock4.webp)
 这里注意一点如果假设to释放锁，t1获取到锁，则锁等待队列如下,注意head中waitStatus的变化，也就是我们上面说的Note2：(node2节点获取到了锁，才会将head变为node1,并将node1 thread属性=null)。
 
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-0e28f3d07c55099e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock5](/image/thread/reentrantlock/reentrantlock5.webp)
 
 ## 2.unLock()非公平实现
-```
+```java
   public void unlock() {
         sync.release(1);
     }
@@ -309,7 +309,7 @@ final boolean nonfairTryAcquire(int acquires) {
  - 2.node为head的后继节点，则去唤醒一个距离node最近的节点（这个节点在队列中node之后），等待锁队列仍会存在被标记取消的节点（waitStatus =1）
 - 3.如果不是上面2种情况，则在队列中将node节点移除
 这三种情况都会移除掉node前面已经被标记取消的节点（代码while循环）
-```
+```java
   //因为异常情况
      private void cancelAcquire(Node node) {
         if (node == null)
@@ -352,10 +352,10 @@ final boolean nonfairTryAcquire(int acquires) {
     }
 ```
 这里我们考虑一种情况因为我们上述说的情况中，我们说的上述情况2，并不会在等待锁队列中移除掉被标记取消的节点，而且next指向了自己，这在等待锁队列可能形成如下情况
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-060438bed9dbe3cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock6](/image/thread/reentrantlock/reentrantlock6.webp)
 
 此时我们往等待锁队列添加节点，因为Note1：的缘故，所以添加队列如下
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-701b8b642d1fc17b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock7](/image/thread/reentrantlock/reentrantlock7.webp)
 我们在Note3：也会帮助我们跳过那些标记取消节点，
 并且在 Note4：我们会从tail往前查找
 ## 4.lock()公平实现
@@ -410,7 +410,7 @@ tryAcquire调用FairSync中tryAcquire()方法，这个方法加锁成功后返�
 unlock公平锁和非公平锁实现相同
 ## 6.condition.await()
 当前线程挂起，并将锁释放
-```
+```java
 	 //ConditionObject内部类中
 	public final void await() throws InterruptedException {
 		  if (Thread.interrupted())
@@ -453,7 +453,7 @@ unlock公平锁和非公平锁实现相同
 	}  
 ```
 这里我们看下while循环表达式
-```      
+```java 
     /**AbstractQueuedSynchronizer类中   判断node是否在条件等待队列，
       *在条件等待队列中 node.prev始终为null,**/
     final boolean isOnSyncQueue(Node node) {
@@ -477,7 +477,7 @@ unlock公平锁和非公平锁实现相同
     }
 ```
 这里我们看下checkInterruptWhileWaiting
-```
+```java
   /**ConditionObject类中方法  
    **线程未中断返回0 
   ** 线程在通知之前中断返回 THROW_IE    -1
@@ -503,7 +503,7 @@ unlock公平锁和非公平锁实现相同
 ```
 acquireQueued即我们上面提到获取锁
 我们再看下reportInterruptAfterWait，前面我们提到如果在通知之前线程已经被中断了，返回THROW_IE   ，则我们应该抛出中断异常，否则在通知之后，我们去响应中断
-```
+```java
         private void reportInterruptAfterWait(int interruptMode)
             throws InterruptedException {
            
@@ -515,7 +515,7 @@ acquireQueued即我们上面提到获取锁
 
 ```
 关于上面所说的通知之前线程已经被中断了我们举个例子说明下,这个例子是中断发生在通知之前
-```
+```java
 public class ConditionDemo5 {
 
     public  static ReentrantLock reentrantLock = new ReentrantLock();
@@ -555,7 +555,7 @@ public class ConditionDemo5 {
 }
 ```
 结果如下
-```
+```java
 线程等待condition:2019-08-29 :08:48:56
 线程执行完毕:2019-08-29 :08:48:58
 java.lang.InterruptedException
@@ -567,7 +567,7 @@ java.lang.InterruptedException
 
 ## 7.condition.signal()
 条件通知，将一个条件等待队列中节点移除，并将节点放入锁等待队列。
-```
+```java
    public final void signal() {
             if (!isHeldExclusively())
                 throw new IllegalMonitorStateException();
@@ -601,22 +601,22 @@ java.lang.InterruptedException
 ```
 # 四、总结
 最后我们总结下ReentrantLock，假设我们有线程t0、t1、t2、t3、t4四个线程去获取锁，t0获取到锁，那么此时等待锁获取的队列为
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-537d655ecbffb525.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock8](/image/thread/reentrantlock/reentrantlock8.webp)
 假设t0执行完毕释放掉锁，t1获取锁时发生异常，那么此时等待锁获取的队列为
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-d408974d8234cda4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock9](/image/thread/reentrantlock/reentrantlock9.webp)
 t2获取到锁，此时等待锁获取的队列为（Note3：帮我们移除掉被标记取消的节点）
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-0859b5acbdbdedc5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock10](/image/thread/reentrantlock/reentrantlock10.webp)
 此时t2执行 condition.await()，则条件等待队列如下(为了对应上我们将条件等待队列中持有t2的线程定义为cnode2)，会释放掉锁
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-eea4e33a27feac8f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock11](/image/thread/reentrantlock/reentrantlock11.webp)
 此时t3获取到锁，则锁等待队列为
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-ba3d8b07fd03c35e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock12](/image/thread/reentrantlock/reentrantlock12.webp)
 假设t2执行 condition.await()，此时条件等待队列如下
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-b7d7affbb8316787.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock13](/image/thread/reentrantlock/reentrantlock13.webp)
 假设线程t4获取到锁，则锁等待队列为
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-a87b09f5ee8bc102.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock14](/image/thread/reentrantlock/reentrantlock14.webp)
 此时若t4执行了2次condition.signal()或者signalAll()方法，则条件等待队列清空，
 firstWaiter和lastWaiter分别指向null，添加t2和t3线程进入锁等待队列，锁等待队列如下
-![image.png](https://upload-images.jianshu.io/upload_images/15302255-ddcfa24fde84186e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![reentrantlock15](/image/thread/reentrantlock/reentrantlock15.webp)
 然后t2和t3分别等待t4释放锁后去获取锁
 
 
