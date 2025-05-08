@@ -17,6 +17,7 @@ export default defineConfig({
 		  text: '并发',
 		  collapsed: true,
 		  items: [
+			  { text: '线程方法', link: '/thread/thread' },
 		  ]
 		},
 		{
