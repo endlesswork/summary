@@ -18,6 +18,7 @@ export default defineConfig({
 		  collapsed: true,
 		  items: [
 			  { text: '线程方法', link: '/thread/thread' },
+			  { text: 'ReentrantLock使用样例', link: '/thread/reentrant-use' },
 			  { text: 'ReentrantLock实现原理', link: '/thread/reentrant-lock' },
 			  { text: '线程池实现原理', link: '/thread/thread-pool' },
 		  ]
