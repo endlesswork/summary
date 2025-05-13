@@ -257,4 +257,77 @@ t1等待结束1564909423117
 **t2执行完毕了 -> t2 睡 10 秒，期间锁未释放，t1 虽然被唤醒但还在等待锁**   
 **t1等待结束  -> t2 释放锁后，t1 重新竞争到锁，继续执行** 
 
+## ✨LockSupport
+### ✅ 核心方法
+```java
+// 阻塞当前线程
+LockSupport.park();
+
+// 唤醒指定线程
+LockSupport.unpark(Thread thread);
+```
+### 🧠 原理：许可机制（permit）
+- 每个线程最多拥有一个**“许可”**
+- park()：
+	- 没有许可则阻塞线程
+	- 有许可则立即返回并消费该许可
+- unpark(thread)：
+	- 如果目标线程没被阻塞，则提前“发放许可”
+	- 如果目标线程已被阻塞，则立即唤醒
+	- 多次 unpark() 不会累计许可，最多只保留一个许可
+
+### ⚠️ 注意事项
+- unpark 可以在 park 之前调用，相当于“发放许可”
+- 许可不会累计，多次 unpark 只有一次作用
+- park 可能出现虚假唤醒，应使用循环判断条件
+- park 不抛异常，但可以通过 Thread.interrupted() 检查中断状态
+
+unpark顺序demo
+```java
+public class LockSupportDemo2 implements Runnable{
+
+    public String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LockSupportDemo2(String name){
+        this.name = name;
+    }
+
+    @Override
+    public void run() {
+        System.out.println(name + "开始执行");
+        LockSupport.unpark(Thread.currentThread());
+        LockSupport.park();
+        System.out.println(name + "正常执行");
+        System.out.println(name + "阻塞状态" + Thread.interrupted());
+    }
+
+    public static void main(String args[]) throws InterruptedException {
+        LockSupportDemo2 lockSupportDemo = new LockSupportDemo2("t1");
+        Thread thread1 = new Thread(lockSupportDemo);
+        thread1.start();
+        Thread.sleep(1000);
+        System.out.println("开始执行解锁");
+        LockSupport.unpark(thread1);
+
+    }
+}
+```
+可以看到结果,unpark会让下次park不起作用，输出如下
+
+```log
+t1开始执行
+t1正常执行
+t1阻塞状态false
+开始执行解锁
+```
+
+
 
