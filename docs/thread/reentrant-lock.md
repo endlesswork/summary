@@ -248,9 +248,21 @@ final boolean nonfairTryAcquire(int acquires) {
 ```
 在这一步结束后，假设t1和t2、t3、t4都没获取到锁，锁等待队列可能如下，和之前比waitStatus发生变化
 ![reentrantlock4](/image/thread/reentrantlock/reentrantlock4.webp)
-这里注意一点如果假设to释放锁，t1获取到锁，则锁等待队列如下,注意head中waitStatus的变化，也就是我们上面说的Note2：(node2节点获取到了锁，才会将head变为node1,并将node1 thread属性=null)。
+这里注意一点如果假设t0释放锁，t1获取到锁，则锁等待队列如下,注意head中waitStatus的变化，也就是我们上面说的Note2：(node2节点获取到了锁，才会将head变为node1,并将node1 thread属性=null)。
 
 ![reentrantlock5](/image/thread/reentrantlock/reentrantlock5.webp)
+
+### 🔑 细节
+**我们看下parkAndCheckInterrupt()这部分,可以帮助我们更好理解线程中断**
+
+假设有一个线程 t1 执行 lock()：
+
+1. t1 因为没有获取到锁，被加入到等待队列。
+2. 其他线程中断了 t1，t1 被唤醒。
+3. 由于 parkAndCheckInterrupt() 直接清除了中断标志，所以 t1 内部的中断状态是 被清除的，此时的中断标志是 false。
+4. 等到 t1 获取到锁后，AQS 会检查 interrupted 变量，如果它被设置为 true，则调用 selfInterrupt() 恢复中断标志。
+**让线程挂起并确保中断状态被清除，以便 AQS 可以在合适的时机恢复中断标志，确保中断信号不会遗失  也就是又把 中断到底进不进行给了线程本身（这里是t1）**
+
 
 ## 2.unLock()非公平实现
 ```java
@@ -359,7 +371,7 @@ final boolean nonfairTryAcquire(int acquires) {
 我们在Note3：也会帮助我们跳过那些标记取消节点，
 并且在 Note4：我们会从tail往前查找
 ## 4.lock()公平实现
-```
+```java
      final void lock() {
            acquire(1);
      }
@@ -370,7 +382,7 @@ final boolean nonfairTryAcquire(int acquires) {
     }
 ```
 tryAcquire调用FairSync中tryAcquire()方法，这个方法加锁成功后返回true
-```
+```java
     protected final boolean tryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();

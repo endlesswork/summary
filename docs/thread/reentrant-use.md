@@ -139,8 +139,19 @@ public class ReentrantLockDemo2 implements Runnable{
 ```
 
 ## 3.Condition用法
-condition执行前必须获取到锁
-reentrantLock与condition其实类似synchronized 和wait/notify,但是前者锁的力度相对较小，并且提供了不可中断的等待方法awaitUninterruptibly
+
+
+### ✅ 基本概念
+
+- Condition 是一个接口，配合 ReentrantLock 使用。
+- 类似于传统的 synchronized + wait/notify：
+	- await() ≈ wait()
+	- signal() ≈ notify()  **和notify一样， signal()执行完并不会立马释放锁，signal() 只是把一个在等待队列中的线程转移到同步队列中（AQS的等待锁队列）**
+	- signalAll() ≈ notifyAll()
+	
+但相比之下，Condition **支持多个等待线程**，可以更精细地控制线程通信。
+
+
 ``` java
 public class ConditionDemo implements Runnable{
 
@@ -194,13 +205,16 @@ public class ConditionDemo2 {
         public void run() {
             try {
                 reentrantLock.lock();
+                reentrantLock.lock();
                 System.out.println("线程1等待condition:"+getDate());
                 condition.await();
                 System.out.println("线程1又继续执行了:"+getDate());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }finally {
-                reentrantLock.unlock();
+                while (reentrantLock.isHeldByCurrentThread()) {
+                    reentrantLock.unlock();
+                }
             }
         }
     }
@@ -212,7 +226,6 @@ public class ConditionDemo2 {
             System.out.println("线程2执行开始:"+getDate());
             try {
                 reentrantLock.lock();
-                reentrantLock.lock();
                 condition.signal();
                 System.out.println("线程2休眠开始:"+getDate());
                 Thread.sleep(10000);
@@ -220,7 +233,6 @@ public class ConditionDemo2 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                reentrantLock.unlock();
                 reentrantLock.unlock();
             }
             System.out.println("线程2执行结束:"+getDate());
