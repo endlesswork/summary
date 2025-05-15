@@ -46,6 +46,12 @@ thread.setDaemon(true);
 - **如果线程被Object.wait, Thread.join和Thread.sleep三种方法之一阻塞，会不断查询线程的中断标记，如果为true，则停止阻塞并抛出InterruptedException异常。如果为false，则继续阻塞。
 注意一点，在调用Object.wait, Thread.join和Thread.sleep方法之后，会清除掉中断标记，如果我们还需要中断标记，需要再次对线程进行interrupt()方法**
 
+#### ✅ 为什么设计成这样？
+这是 Java 的 设计选择，为了简化错误处理和控制流程：
+- 如果你已经通过抛异常中断阻塞，就说明你已经“响应”过这个中断了。
+- 所以不需要再保留中断状态，避免其他代码误判。
+- 如果你需要“保留中断”，可以手动恢复它。
+
 我们看个interrupt()、isInterrupted() 与 Thread.interrupted() 示例
 ```java
 public class InterruptDemo extends Thread {
