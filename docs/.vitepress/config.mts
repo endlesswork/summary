@@ -21,6 +21,7 @@ export default defineConfig({
 			  { text: 'ReentrantLock使用样例', link: '/thread/reentrantlock-use' },
 			  { text: 'ReentrantLock实现原理(JDK8)', link: '/thread/reentrantlock' },
 			  { text: 'FutureTask使用样例', link: '/thread/futuretask-use' },
+			  { text: 'FutureTask实现原理(JDK8)', link: '/thread/futuretask' },
 			  { text: '线程池实现原理(JDK8)', link: '/thread/threadpool' },
 		  ]
 		},
