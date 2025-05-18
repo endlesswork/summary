@@ -18,6 +18,8 @@ export default defineConfig({
 		  collapsed: true,
 		  items: [
 			  { text: '线程方法', link: '/thread/thread' },
+			  { text: 'join(JDK21)', link: '/thread/join' },
+			  { text: '虚拟线程', link: '/thread/virtualthread' },
 			  { text: 'ReentrantLock使用样例', link: '/thread/reentrantlock-use' },
 			  { text: 'ReentrantLock实现原理(JDK8)', link: '/thread/reentrantlock' },
 			  { text: 'FutureTask使用样例', link: '/thread/futuretask-use' },
