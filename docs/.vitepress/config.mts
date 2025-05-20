@@ -23,6 +23,7 @@ export default defineConfig({
 			  { text: 'FutureTask使用样例', link: '/thread/futuretask-use' },
 			  { text: 'FutureTask实现原理(JDK8)', link: '/thread/futuretask' },
 			  { text: 'Semaphore使用', link: '/thread/semaphore-use' },
+			  { text: 'Semaphore原理(JDK21)', link: '/thread/semaphore' },
 			  { text: 'CountDownLatch使用', link: '/thread/countdownlatch-use' },
 			  { text: 'CyclicBarrier使用', link: '/thread/cyclicbarrier-use' },
 			  { text: '线程池实现原理(JDK8)', link: '/thread/threadpool' },
