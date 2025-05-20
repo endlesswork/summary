@@ -25,6 +25,7 @@ export default defineConfig({
 			  { text: 'Semaphore使用', link: '/thread/semaphore-use' },
 			  { text: 'Semaphore原理(JDK21)', link: '/thread/semaphore' },
 			  { text: 'CountDownLatch使用', link: '/thread/countdownlatch-use' },
+			  { text: 'CountDownLatch原理(JDK21)', link: '/thread/countdownlatch' },
 			  { text: 'CyclicBarrier使用', link: '/thread/cyclicbarrier-use' },
 			  { text: '线程池实现原理(JDK8)', link: '/thread/threadpool' },
 		  ]

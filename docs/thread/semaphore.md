@@ -124,3 +124,17 @@ public final boolean hasQueuedPredecessors() {
 ## release()
 - 公平锁和非公平锁释放锁过程一致只是将许可数 state 加回来（CAS 增加）；
 - 成功返回 true，让 AQS 去唤醒等待队列中的线程。
+
+## 🧠 总结
+
+### 🟡 非公平锁（默认实现）
+- 调用 `acquire` 时：
+  - 直接尝试获取许可（通过 CAS 扣减 `state`）；
+  - 如果获取成功，立即返回；
+  - 如果获取失败（即剩余许可小于请求量），则加入 AQS 同步队列中等待。
+
+### 🟢 公平锁（构造时传入 `true`）
+- 调用 `acquire` 时：
+  - 首先调用 `hasQueuedPredecessors()` 检查是否有排队线程；
+  - 如果有排队线程，直接放弃尝试，加入队列；
+  - 如果没有排队线程，再尝试 CAS 扣减许可。
