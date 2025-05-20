@@ -69,8 +69,26 @@ static final class NonfairSync extends Sync {
 		return nonfairTryAcquireShared(acquires);
 	}
 }
+```
+## acquire()
+当我们在demo中调用acquire()时
+```java	
+public void acquire() throws InterruptedException {
+	sync.acquireSharedInterruptibly(1);
+}
 ```	
+当我们获取不到信号量时，就将线程加入AQS的等待队列
+```java	
+public final void acquireSharedInterruptibly(int arg)
+	throws InterruptedException {
+	if (Thread.interrupted() ||
+		(tryAcquireShared(arg) < 0 &&
+		 acquire(null, arg, true, true, false, 0L) < 0))
+		throw new InterruptedException();
+}
+```		
 ## 公平实现
+可以看到和非公平的区别是调用 hasQueuedPredecessors() **如果队列前面有线程，自己不能插队**
 ```java
 static final class FairSync extends Sync {
 	private static final long serialVersionUID = 2014338818796000944L;
@@ -92,6 +110,7 @@ static final class FairSync extends Sync {
 	}
 }
 ```	
+AQS类中，判断有没有等待的线程
 ```	java
 public final boolean hasQueuedPredecessors() {
 	Thread first = null; Node h, s;
@@ -102,3 +121,6 @@ public final boolean hasQueuedPredecessors() {
 	return first != null && first != Thread.currentThread();
 }
 ```	
+## release()
+- 公平锁和非公平锁释放锁过程一致只是将许可数 state 加回来（CAS 增加）；
+- 成功返回 true，让 AQS 去唤醒等待队列中的线程。
