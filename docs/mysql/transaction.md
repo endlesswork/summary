@@ -52,6 +52,23 @@ SELECT age FROM users WHERE id = 1; -- 结果为 19，发生不可重复读
   - 不可重复读 ❌
   - 幻读 ✅（但 InnoDB 使用 Next-Key Lock 避免）
 
+#### 示例（幻读）
+```
+-- 事务 A
+START TRANSACTION;
+SELECT * FROM users WHERE age = 18; -- 查询到 5 条记录
+
+-- 事务 B
+START TRANSACTION;
+INSERT INTO users(id, name, age) VALUES (100, 'aaa', 18);
+COMMIT;
+
+-- 事务 A（继续）
+SELECT * FROM users WHERE age = 18; -- 查询到6条
+COMMIT;
+
+```
+
 ### 4. SERIALIZABLE（串行化）
 - 最严格的隔离级别，事务完全串行化执行。
 - 每个事务对表中的数据加锁，防止其他事务读写。
