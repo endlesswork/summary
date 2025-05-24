@@ -130,6 +130,7 @@ Redis 会对 {1001} 做哈希计算，而不是整个 key。这样这两个 key 
 
 同理 我们运用到Hash Tag 不合理的话就会导致某个hash槽负载过大
 
+**我们在集群模式下使用`RedisTemplate.opsForValue().multiGet()`时，因为MGET 不支持跨 slot key 操作，所以一般会加上HashTag**
 
 Hash Tag 计算 示例
 ```java
