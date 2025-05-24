@@ -27,6 +27,7 @@ CyclicBarrier(int parties, Runnable barrierAction)
 | `reset()`            | 重置屏障状态，取消所有等待线程，重新使用               |
 
 ## 🧪4. 示例代码
+### 正常到达屏障 
 ```java
 public class CyclicBarrierDemo {
 
@@ -77,6 +78,85 @@ public class CyclicBarrierDemo {
 [23:35:22] 线程 2 继续执行后续任务
 [23:35:22] 线程 0 继续执行后续任务
 [23:35:22] 线程 1 继续执行后续任务
+```
+### 重置屏障
+```java
+public class CyclicBarrierResetDemo {
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+    public static void main(String[] args) throws InterruptedException {
+        CyclicBarrier barrier = new CyclicBarrier(3, () -> {
+            log("所有线程到达屏障，执行 barrierAction");
+        });
+
+        Runnable task = () -> {
+            try {
+                String name = Thread.currentThread().getName();
+                log(name + " 等待屏障");
+                if ("Thread-1".equals(name)) {
+                    Thread.sleep(500);
+                    Thread.currentThread().interrupt();
+                }
+
+                barrier.await();
+                log(name + " 通过屏障");
+
+            } catch (Exception e) {
+                log(Thread.currentThread().getName() + " 异常: " + e);
+                log(" 屏障是否损坏: " + barrier.isBroken());
+            }
+        };
+
+        // 启动第一轮线程（Thread-1 中断）
+        for (int i = 0; i < 3; i++) {
+            new Thread(task, "Thread-" + i).start();
+        }
+
+        // 等待线程完成出错
+        Thread.sleep(2000);
+
+        log("主线程调用 reset()");
+        barrier.reset();
+
+        // 启动第二轮线程
+        for (int i = 3; i < 6; i++) {
+            new Thread(() -> {
+                try {
+                    String name = Thread.currentThread().getName();
+                    log(name + " 第二轮等待屏障");
+                    barrier.await();
+                    log(name + " 第二轮通过屏障");
+                } catch (Exception e) {
+                    log(Thread.currentThread().getName() + " 第二轮异常: " + e);
+                }
+            }, "Thread-" + i).start();
+        }
+    }
+
+    private static void log(String message) {
+        System.out.println("[" + LocalTime.now().format(TIME_FORMATTER) + "] " + message);
+    }
+}
+```
+输出如下
+```log
+[00:44:11] Thread-2 等待屏障
+[00:44:11] Thread-1 等待屏障
+[00:44:11] Thread-0 等待屏障
+[00:44:12] Thread-0 异常: java.util.concurrent.BrokenBarrierException
+[00:44:12] Thread-2 异常: java.util.concurrent.BrokenBarrierException
+[00:44:12] Thread-1 异常: java.lang.InterruptedException
+[00:44:12]  屏障是否损坏: true
+[00:44:12]  屏障是否损坏: true
+[00:44:12]  屏障是否损坏: true
+[00:44:13] 主线程调用 reset()
+[00:44:13] Thread-3 第二轮等待屏障
+[00:44:13] Thread-4 第二轮等待屏障
+[00:44:13] Thread-5 第二轮等待屏障
+[00:44:13] 所有线程到达屏障，执行 barrierAction
+[00:44:13] Thread-3 第二轮通过屏障
+[00:44:13] Thread-5 第二轮通过屏障
+[00:44:13] Thread-4 第二轮通过屏障
 ```
 ## 📘 5. 用途举例
 - 多线程并行计算之后合并结果

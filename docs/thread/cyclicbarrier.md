@@ -229,6 +229,7 @@ private void breakBarrier() {
 }	
 ```	
 ## reset
+手动重置屏障
 ```	java
 public void reset() {
 	final ReentrantLock lock = this.lock;
@@ -241,4 +242,3 @@ public void reset() {
 	}
 }
 ```		
-## 🧠 总结
