@@ -163,6 +163,16 @@
   },
   "active": "45b5953151d2ce6d",
   "lastOpenFiles": [
+    "docs/thread/cyclicbarrier.md",
+    "docs/thread/countdownlatch copy.md",
+    "docs/thread/countdownlatch.md",
+    "docs/thread/semaphore copy.md",
+    "docs/thread/semaphore.md",
+    "docs/thread/semaphore-use copy.md",
+    "docs/thread/synchronized.md",
+    "docs/thread/cyclicbarrier-use.md",
+    "docs/thread/countdownlatch-use.md",
+    "docs/thread/semaphore-use.md",
     "docs/thread/join.md",
     "docs/thread/virtualthread.md",
     "docs/thread/threadpool.md",
@@ -193,18 +203,7 @@
     "docs/public/image/thread",
     "docs/thread/thread.md",
     "docs/thread/thred.md",
-    "docs/computer/io-model.md",
-    "docs/computer/computer-io.md",
     "docs/public/image/computer",
-    "docs/computer/zero-copy.md",
-    "docs/computer/kernel-mode.md",
-    "docs/computer/dma.md",
-    "docs/computer",
-    "docs/zookeeper/zookeeper-watch.md",
-    "docs/zookeeper/zookeeper-zab copy.md",
-    "docs/zookeeper/zookeeper-zab.md",
-    "docs/zookeeper/zookeeper-introduction.md",
-    "docs/redis/redis-lock.md",
-    "docs/redis/redis-watch.md"
+    "docs/computer"
   ]
 }
