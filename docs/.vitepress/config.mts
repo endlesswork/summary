@@ -37,7 +37,9 @@ export default defineConfig({
 		  items: [
 			{ text: '索引', link: '/mysql/index' },
 			{ text: '事务', link: '/mysql/transaction' },
+			{ text: '日志', link: '/mysql/log' },
 			{ text: '锁', link: '/mysql/lock' },
+			{ text: 'MVCC', link: '/mysql/mvcc' },
 			
 		  ]
 		},	
