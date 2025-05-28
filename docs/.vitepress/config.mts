@@ -40,6 +40,7 @@ export default defineConfig({
 			{ text: '日志', link: '/mysql/log' },
 			{ text: '锁', link: '/mysql/lock' },
 			{ text: 'MVCC', link: '/mysql/mvcc' },
+			{ text: '死锁', link: '/mysql/dead-lock' },
 			
 		  ]
 		},	
