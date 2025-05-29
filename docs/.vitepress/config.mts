@@ -87,6 +87,7 @@ export default defineConfig({
 	    text: 'SpringBoot',
 	    collapsed: true,
 	    items: [
+			{ text: 'Eureka多级缓存', link: '/boot/eureka' },
 	    ]
 	  },
       {
