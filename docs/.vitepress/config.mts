@@ -29,6 +29,7 @@ export default defineConfig({
 			  { text: 'CyclicBarrier使用', link: '/thread/cyclicbarrier-use' },
 			  { text: 'CyclicBarrier原理(JDK21)', link: '/thread/cyclicbarrier' },
 			  { text: '线程池实现原理(JDK8)', link: '/thread/threadpool' },
+			  { text: 'ThreadLocal', link: '/thread/thread-local' },
 		  ]
 		},
 		{
