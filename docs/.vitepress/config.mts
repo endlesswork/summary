@@ -14,6 +14,13 @@ export default defineConfig({
     ],
     sidebar: [
 		{
+		  text: 'Java基础',
+		  collapsed: true,
+		  items: [
+			  { text: '引用类型', link: '/base/java-reference-types' },
+		  ]
+		},
+		{
 		  text: '并发',
 		  collapsed: true,
 		  items: [
