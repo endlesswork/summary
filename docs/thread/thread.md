@@ -2,6 +2,130 @@
 线程状态图
 ![thread-pool-1](/image/thread/thread/thread-status.webp)
 
+## 🧩 Object 类中的线程协作方法
+### 1. `wait()`
+- 当前线程进入等待状态，直到被其他线程唤醒
+- **必须在持有该对象锁的同步块或方法中调用（也就是要在 synchronized(obj) 块中）**，否则抛 IllegalMonitorStateException
+- 调用后线程会：
+   - **释放该对象的锁（monitor）**
+   - 挂起等待（进入对象的等待队列）
+- 被唤醒后，**必须重新竞争锁才能继续执行**。
+
+看一个例子
+```java
+public class WaitDemo {
+
+    public static void main(String []args) throws InterruptedException {
+        WaitDemo waitDemo = new WaitDemo();
+        Thread thread1 = new Thread("t1"){
+            @Override
+            public void run(){
+                synchronized (waitDemo){
+                    try {
+                        System.out.println("t1进入等待");
+                        waitDemo.wait();
+                       //我们没有写对象的唤醒，所以这句话不会输出出来
+                        System.out.println("t1等待结束");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        };
+
+        Thread thread2 = new Thread("t2"){
+            @Override
+            public void run(){
+                synchronized (waitDemo){
+                   //因为wait会释放掉waitDemo的内置锁，所以可以显示这句话会第二输出
+                    System.out.println("t2进来了");
+                }
+            }
+        };
+        thread1.start();
+        Thread.sleep(1000);
+        thread2.start();
+
+    }
+
+}
+```
+输出如下
+```log
+t1进入等待
+t2进来了
+```
+
+### 2. `notifyAll()`
+- 最多等待指定毫秒数，超时后自动唤醒
+
+### 3. `wait(long timeout, int nanos)`
+- 更高精度的等待时间，实际等待时间约为：timeout + nanos / 1_000_000 毫秒
+
+### 4. `notify()`
+- **同样必须在持有对象锁（即 synchronized 块或方法中）时调用**
+- **与wait区别，notify退出同步块，锁才会被释放**
+- **唤醒一个在该对象上 wait() 的线程（具体哪个线程由 JVM 决定）**
+- 被唤醒的线程会进入就绪状态，等待重新竞争锁
+
+### 5. `notifyAll()`
+- 唤醒所有在该对象上 wait() 的线程
+
+我们看个 notify的例子
+```java
+public class NotifyDemo {
+
+    public static void main(String []args) throws InterruptedException {
+        NotifyDemo notifyDemo = new NotifyDemo();
+        Thread thread1 = new Thread("t1"){
+            @Override
+            public void run(){
+                synchronized (notifyDemo){
+                    try {
+                        System.out.println("t1进入等待"+System.currentTimeMillis());
+                        notifyDemo.wait();
+                        System.out.println("t1等待结束"+System.currentTimeMillis());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        Thread thread2 = new Thread("t2"){
+            @Override
+            public void run(){
+                synchronized (notifyDemo){
+                    System.out.println("t2进来了"+System.currentTimeMillis());
+                    notifyDemo.notify();
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("t2执行完毕了"+System.currentTimeMillis());
+                }
+            }
+        };
+        thread1.start();
+        Thread.sleep(1000);
+        thread2.start();
+    }
+}
+```
+
+```
+t1进入等待1564909412115
+t2进来了1564909413116
+t2执行完毕了1564909423117
+t1等待结束1564909423117
+```
+**t1进入等待  -> t1 线程持有锁，调用 wait() 后释放锁，进入等待状态** 
+**t2进来了   -> t2 获取锁后调用 notify()，唤醒 t1，但 t1 还不能立即执行**   
+**t2执行完毕了 -> t2 睡 10 秒，期间锁未释放，t1 虽然被唤醒但还在等待锁**   
+**t1等待结束  -> t2 释放锁后，t1 重新竞争到锁，继续执行** 
+
 ## 🧵 Java Thread 方法
 ```java
 // 启动线程
@@ -138,130 +262,52 @@ java.lang.InterruptedException: sleep interrupted
 线程执行休眠开始
 线程执行休眠开始
 ```
+### ✅ join
+用于**等待一个线程执行完毕**。当一个线程调用另一个线程的 join() 方法时，它会**阻塞自己，直到被调用的线程执行结束或被中断**
 
-## 🧩 Object 类中的线程协作方法
-### 1. `wait()`
-- 当前线程进入等待状态，直到被其他线程唤醒
-- **必须在持有该对象锁的同步块或方法中调用（也就是要在 synchronized(obj) 块中）**，否则抛 IllegalMonitorStateException
-- 调用后线程会：
-   - **释放该对象的锁（monitor）**
-   - 挂起等待（进入对象的等待队列）
-- 被唤醒后，**必须重新竞争锁才能继续执行**。
+#### 源码解析（JDK21）
 
-看一个例子
-```java
-public class WaitDemo {
+- synchronized (this)：锁的是被 join 的线程对象本身（例如 thread.join() 中锁的是 thread 对象）。
+- isAlive()：判断目标线程是否仍然存活（尚未执行完）。
+- wait()：调用的是 Object.wait()，使当前线程（调用 join 的线程）进入等待状态。
 
-    public static void main(String []args) throws InterruptedException {
-        WaitDemo waitDemo = new WaitDemo();
-        Thread thread1 = new Thread("t1"){
-            @Override
-            public void run(){
-                synchronized (waitDemo){
-                    try {
-                        System.out.println("t1进入等待");
-                        waitDemo.wait();
-                       //我们没有写对象的唤醒，所以这句话不会输出出来
-                        System.out.println("t1等待结束");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+```
+public final void join() throws InterruptedException {
+	join(0);
+}
+public final void join(long millis) throws InterruptedException {
+	if (millis < 0)
+		throw new IllegalArgumentException("timeout value is negative");
 
-            }
-        };
+	if (this instanceof VirtualThread vthread) {
+		if (isAlive()) {
+			long nanos = MILLISECONDS.toNanos(millis);
+			vthread.joinNanos(nanos);
+		}
+		return;
+	}
 
-        Thread thread2 = new Thread("t2"){
-            @Override
-            public void run(){
-                synchronized (waitDemo){
-                   //因为wait会释放掉waitDemo的内置锁，所以可以显示这句话会第二输出
-                    System.out.println("t2进来了");
-                }
-            }
-        };
-        thread1.start();
-        Thread.sleep(1000);
-        thread2.start();
-
-    }
-
+	synchronized (this) {
+		if (millis > 0) {
+			if (isAlive()) {
+				final long startTime = System.nanoTime();
+				long delay = millis;
+				do {
+					wait(delay);
+				} while (isAlive() && (delay = millis -
+						 NANOSECONDS.toMillis(System.nanoTime() - startTime)) > 0);
+			}
+		} else {
+			while (isAlive()) {
+				wait(0);
+			}
+		}
+	}
 }
 ```
-输出如下
-```log
-t1进入等待
-t2进来了
-```
-
-### 2. `notifyAll()`
-- 最多等待指定毫秒数，超时后自动唤醒
-
-### 3. `wait(long timeout, int nanos)`
-- 更高精度的等待时间，实际等待时间约为：timeout + nanos / 1_000_000 毫秒
-
-### 4. `notify()`
-- **同样必须在持有对象锁（即 synchronized 块或方法中）时调用**
-- **与wait区别，notify退出同步块，锁才会被释放**
-- **唤醒一个在该对象上 wait() 的线程（具体哪个线程由 JVM 决定）**
-- 被唤醒的线程会进入就绪状态，等待重新竞争锁
-
-### 5. `notifyAll()`
-- 唤醒所有在该对象上 wait() 的线程
-
-我们看个 notify的例子
-```java
-public class NotifyDemo {
-
-    public static void main(String []args) throws InterruptedException {
-        NotifyDemo notifyDemo = new NotifyDemo();
-        Thread thread1 = new Thread("t1"){
-            @Override
-            public void run(){
-                synchronized (notifyDemo){
-                    try {
-                        System.out.println("t1进入等待"+System.currentTimeMillis());
-                        notifyDemo.wait();
-                        System.out.println("t1等待结束"+System.currentTimeMillis());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-
-        Thread thread2 = new Thread("t2"){
-            @Override
-            public void run(){
-                synchronized (notifyDemo){
-                    System.out.println("t2进来了"+System.currentTimeMillis());
-                    notifyDemo.notify();
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("t2执行完毕了"+System.currentTimeMillis());
-                }
-            }
-        };
-        thread1.start();
-        Thread.sleep(1000);
-        thread2.start();
-    }
-}
-```
-
-```
-t1进入等待1564909412115
-t2进来了1564909413116
-t2执行完毕了1564909423117
-t1等待结束1564909423117
-```
-**t1进入等待  -> t1 线程持有锁，调用 wait() 后释放锁，进入等待状态** 
-**t2进来了   -> t2 获取锁后调用 notify()，唤醒 t1，但 t1 还不能立即执行**   
-**t2执行完毕了 -> t2 睡 10 秒，期间锁未释放，t1 虽然被唤醒但还在等待锁**   
-**t1等待结束  -> t2 释放锁后，t1 重新竞争到锁，继续执行** 
+#### ❓那谁来调用 notify() 或 notifyAll()？
+当目标线程执行完毕后，**JVM 会自动调用 notifyAll() 唤醒等待在该线程对象上的线程**。虽然我们在代码中看不到这一行，
+但它是 **JVM 的一个内部机制**
 
 ## ✨LockSupport
 ### ✅ 核心方法

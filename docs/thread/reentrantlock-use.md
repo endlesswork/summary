@@ -148,6 +148,10 @@ public class ReentrantLockDemo2 implements Runnable{
 	- await() ≈ wait()
 	- signal() ≈ notify()  **和notify一样， signal()执行完并不会立马释放锁，signal() 只是把一个在等待队列中的线程转移到同步队列中（AQS的等待锁队列）**
 	- signalAll() ≈ notifyAll()
+	- notify() 用的是 synchronized 锁，**锁的释放是自动的（块作用域结束后自动释放）**
+	- signal() 用的是 Lock 显式加锁，**必须你自己手动调用 unlock() 才释放锁**
+
+signal() 用的是 Lock 显式加锁，必须你自己手动调用 unlock() 才释放锁。
 	
 但相比之下，Condition **支持多个等待线程**，可以更精细地控制线程通信。
 
