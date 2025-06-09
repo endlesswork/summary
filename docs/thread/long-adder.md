@@ -16,6 +16,18 @@ transient volatile Cell[] cells;  // 分段数组
 transient volatile long base;     // 基础值
 transient volatile int cellsBusy; // 锁标识，用于初始化或扩容 cells
 ```
+## 内部类Cell
+Cell 内部采用了 volatile long类型变量
+
+### cas(long cmp, long val)
+原子操作：如果当前 value 等于 cmp，就将其更新为 val 并返回 true，否则返回 false。这是实现无锁并发的核心。
+
+### reset()
+重置。原子性地将 value 的值设置为 0。
+
+### getAndSet(long val)
+获取并设置。原子操作：将 value 设置为新值 val，同时返回它之前旧的值。
+
 ```java
 static final class Cell {
 	volatile long value;
@@ -34,6 +46,7 @@ static final class Cell {
 	}
 
 	private static final VarHandle VALUE;
+	//为 cas 方法以及其他原子方法（如 getAndSet）进行一次性的、高效的底层准备工作
 	static {
 		try {
 			MethodHandles.Lookup l = MethodHandles.lookup();
@@ -44,7 +57,7 @@ static final class Cell {
 	}
 }
 ```
-
+## add()
 ```java
 public void add(long x) {
 	Cell[] cs; long b, v; int m; Cell c;
@@ -58,9 +71,12 @@ public void add(long x) {
 	}
 }
 ```
+## longAccumulate()
+Striped64类中方法
 ```java
 final void longAccumulate(long x, LongBinaryOperator fn,
                               boolean wasUncontended, int index) {
+		//初始化当前线程的探针值						    
         if (index == 0) {
             ThreadLocalRandom.current(); 
             index = getProbe();
@@ -127,6 +143,5 @@ final void longAccumulate(long x, LongBinaryOperator fn,
                 break;
         }
     }
-
 
 ```

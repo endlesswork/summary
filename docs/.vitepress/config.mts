@@ -27,7 +27,6 @@ export default defineConfig({
 			  { text: '线程方法', link: '/thread/thread' },
 			  { text: 'CAS', link: '/thread/cas' },
 			  { text: 'LongAdder使用', link: '/thread/long-adder-use' },
-			  { text: 'LongAdder原理(JDK21)', link: '/thread/long-adder' },
 			  { text: 'ReentrantLock使用样例', link: '/thread/reentrantlock-use' },
 			  { text: 'ReentrantLock实现原理(JDK8)', link: '/thread/reentrantlock' },
 			  { text: 'FutureTask使用样例', link: '/thread/futuretask-use' },
