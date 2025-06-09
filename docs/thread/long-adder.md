@@ -1,25 +1,18 @@
-**LongAdder 是一种高并发下比 AtomicLong 更高效的计数器实现**，通过“分段累加”减少竞争
+LongAdder**继承了 Striped64**，并**借助它完成核心功能（分段计数、CAS、自旋扩容等）**
 
-它对写入操作（increment, add）是**线程安全**的。读取时（sum()）不是强一致的，但通常满足统计精度要求
-## 📌 使用示例
+## 📌 方法总览
+| 方法名              | 功能说明                     |
+| ---------------- | ------------------------ |
+| `add(long x)`    | 累加指定的值                   |
+| `increment()`    | 等价于 `add(1)`             |
+| `decrement()`    | 等价于 `add(-1)`            |
+| `sum()`          | 返回当前总和（非原子）              |
+| `reset()`        | 重置 `base` 和所有 `Cell` 为 0 |
+| `sumThenReset()` | 先求和再重置                   |
+## 核心变量
+Striped64 类中
 ```java
-public class LongAdderDemo {
-    public static void main(String[] args) throws InterruptedException {
-        LongAdder adder = new LongAdder();
-        Runnable task = () -> {
-            for (int i = 0; i < 100; i++) {
-                adder.increment();
-            }
-        };
-        Thread t1 = new Thread(task);
-        Thread t2 = new Thread(task);
-        t1.start(); t2.start();
-        t1.join(); t2.join();
-        System.out.println("最终计数值：" + adder.sum());
-    }
-}
-```
-输出如下
-```
-最终计数值：200
+transient volatile Cell[] cells;  // 分段数组
+transient volatile long base;     // 基础值
+transient volatile int cellsBusy; // 锁标识，用于初始化或扩容 cells
 ```
