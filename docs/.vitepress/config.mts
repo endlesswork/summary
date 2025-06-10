@@ -91,6 +91,7 @@ export default defineConfig({
 	    text: 'Kafka',
 	    collapsed: true,
 	    items: [
+			 { text: '日志文件', link: '/kafka/kafka-log' },
 	    ]
 	  },
 	  {
