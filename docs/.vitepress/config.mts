@@ -92,6 +92,8 @@ export default defineConfig({
 	    collapsed: true,
 	    items: [
 			 { text: '日志文件', link: '/kafka/kafka-log' },
+			 { text: 'Kafka 消息流转过程', link: '/kafka/kafka-message' },
+			 { text: 'Kafka 集群', link: '/kafka/kafka-cluster' },
 	    ]
 	  },
 	  {
