@@ -48,6 +48,7 @@ export default defineConfig({
 		  items: [
 			{ text: '索引', link: '/mysql/index' },
 			{ text: '最左索引', link: '/mysql/leftmost-prefix-rule' },
+			{ text: 'Index Skip-Scan', link: '/mysql/index-skip-scan' },
 			{ text: '事务', link: '/mysql/transaction' },
 			{ text: '日志', link: '/mysql/log' },
 			{ text: '锁', link: '/mysql/lock' },
