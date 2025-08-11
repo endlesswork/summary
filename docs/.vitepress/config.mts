@@ -54,6 +54,7 @@ export default defineConfig({
 			{ text: '锁', link: '/mysql/lock' },
 			{ text: 'MVCC', link: '/mysql/mvcc' },
 			{ text: '死锁', link: '/mysql/dead-lock' },
+			{ text: '一些问题', link: '/mysql/question' },
 			
 		  ]
 		},	
@@ -123,6 +124,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: '分布式ID', link: '/distributed/distributed-id' },
+		  { text: '订单超时取消的方案', link: '/distributed/time-out-order' },
         ]
       },
       {
@@ -136,6 +138,7 @@ export default defineConfig({
 		  { text: 'I/O模型', link: '/computer/io-model' },
         ]
       }
+	  
     ]
   }
 })
