@@ -125,6 +125,7 @@ export default defineConfig({
         items: [
           { text: '分布式ID', link: '/distributed/distributed-id' },
 		  { text: '订单超时取消的方案', link: '/distributed/time-out-order' },
+		   { text: '重复支付', link: '/distributed/duplicate-pay' },
         ]
       },
       {
