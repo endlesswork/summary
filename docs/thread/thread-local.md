@@ -72,3 +72,20 @@ public class Thread {
 也就是每个线程在自己内部维持了一个ThreadLocalMap实例，保证了线程隔离
 
 ## 🔥 内存泄漏问题
+**ThreadLocal 之所以会导致内存泄漏，根本原因就是：**
+
+1. **ThreadLocalMap 与线程生命周期绑定**  
+   - 每个 `Thread` 对象内部都有一个 `ThreadLocalMap`（字段 `threadLocals`）。  
+   - `ThreadLocalMap` 的生命周期和线程一致。  
+   - 普通线程结束 → `Thread` 被回收 → `ThreadLocalMap` 也会被回收 → 不会有问题。  
+
+2. **线程池线程不会轻易结束**  
+   - 在线程池中，线程会被复用，长期存在。  
+   - 因此 `ThreadLocalMap` 也会一直存在。  
+
+3. **Key 弱引用 + Value 强引用**  
+   - 如果 `ThreadLocalMap` 中某个 entry 的 **key（弱引用）** 被 GC 回收了，  
+   - 但 **value（强引用对象）** 仍然存在，且没有触发 `remove()` 清理，  
+   - 那么这个 value 就会一直“挂”在 `ThreadLocalMap` 中存活。  里一直存活。
+
+
