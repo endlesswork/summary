@@ -27,8 +27,7 @@
 
 ### 方案二：Redis 延迟队列 / TTL Key 监听
 **实现思路**
-- 下单时 SET key order:{id} value ... EX 1800（30分钟过期）
-- 使用 Redis Keyspace Notifications 监听 key 过期事件，触发取消逻辑
+- 下单时 SET key order:{id} value ... EX 1800（30分钟过期），使用 Redis Keyspace Notifications 监听 key 过期事件，触发取消逻辑
 - 或者用**ZSET**存订单，到期时间为 score，轮询 ZSET 中到期的订单
 
 **优点**
