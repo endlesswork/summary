@@ -271,7 +271,7 @@ java.lang.InterruptedException: sleep interrupted
 - isAlive()：判断目标线程是否仍然存活（尚未执行完）。
 - wait()：调用的是 Object.wait()，使当前线程（调用 join 的线程）进入等待状态。
 
-```
+```java
 public final void join() throws InterruptedException {
 	join(0);
 }
